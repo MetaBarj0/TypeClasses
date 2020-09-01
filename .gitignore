@@ -1,0 +1,4 @@
+.stack-work/
+TypeClasses.cabal
+stack.yaml
+stack.yaml.lock
