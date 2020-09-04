@@ -20,7 +20,7 @@ newtype AnagramReport = AnagramReport {getAnagramReport :: Either AnagramError A
 --   AnagramReport (Right IsNotAnagram) <> _ = AnagramReport (Right IsNotAnagram)
 --   _ <> AnagramReport (Right IsNotAnagram) = AnagramReport (Right IsNotAnagram)
 --   AnagramReport (Right IsAnagram) <> AnagramReport (Right IsAnagram) = AnagramReport (Right IsAnagram)
--- 
+--
 -- instance Monoid AnagramReport where
 --   mempty = AnagramReport (Right IsAnagram)
 --   mappend = (<>)
