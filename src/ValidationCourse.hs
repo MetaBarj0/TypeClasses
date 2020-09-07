@@ -1,11 +1,13 @@
 module ValidationCourse
   ( Anagram.areAnagrams,
     Anagram.AnagramReport (..),
-    Anagram.AnagramResult(..),
+    Anagram.AnagramResult (..),
+    Validation.makeUser,
   )
 where
 
 import Anagram
+import Validation
 
 -- Hidden stuff
 
