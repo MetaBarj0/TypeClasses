@@ -4,11 +4,12 @@ module Validation
 where
 
 import Data.Char (isAlphaNum, isSpace)
+
 makeUser :: String -> String -> Either Error User
-makeUser name password = do
-  validatedName <- validateName name
-  validatedPassword <- validatePassword password
-  return $ User validatedName validatedPassword
+makeUser name password =
+  User
+    <$> validateName name
+    <*> validatePassword password
 
 validateName :: String -> Either Error Name
 validateName name =
@@ -23,7 +24,6 @@ validatePassword password =
     >>= isOnlyAlphaNum
     >>= (Right . Password)
     >>= passwordMustHaveValidLength
-
 
 newtype Password = Password {passwordAsString :: String} deriving (Show)
 
@@ -45,11 +45,11 @@ passwordMustHaveValidLength password
 
 isOnlyAlphaNum :: String -> Either Error String
 isOnlyAlphaNum password
-  | not $ all isAlphaNum password = Left $ Error "The password must not contain any non alphanumerical characters"
+  | not $ all isAlphaNum password = Left $ Error "The specified input must not contain any non alphanumerical characters"
   | otherwise = Right password
 
 stripSpace :: String -> Either Error String
-stripSpace [] = Left $ Error "The password must not be empty"
+stripSpace [] = Left $ Error "The specified input must not be empty"
 stripSpace (x : xs) = if isSpace x then stripSpace xs else Right $ stripReversed $ reverse $ x : xs
   where
     stripReversed :: String -> String
