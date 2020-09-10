@@ -3,6 +3,7 @@ module ValidationCourse
     Anagram.AnagramReport (..),
     Anagram.AnagramResult (..),
     Validation.makeUser,
+    DisplayableUserValidation (..),
   )
 where
 

@@ -23,4 +23,4 @@ main = do
   name <- getLine
   putStrLn "Please, enter a password."
   password <- getLine
-  print $ makeUser name password
+  print $ DisplayableUserValidation $ makeUser name password

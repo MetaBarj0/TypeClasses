@@ -1,26 +1,42 @@
 module Validation
   ( makeUser,
+    DisplayableUserValidation (..),
   )
 where
 
 import Data.Char (isAlphaNum, isSpace)
 import Data.Validation
 
-newtype Error = Error {errorAsStringList :: [String]} deriving (Show)
+newtype Error = Error {errorAsStringList :: [String]}
 
+instance Show Error where
+  show (Error errors) = foldr (\val acc -> acc ++ "- " ++ val ++ "\n") "" errors
+
+-- needed for Validation type
 instance Semigroup Error where
   Error left <> Error right = Error $ left <> right
 
-newtype Name = Name {nameAsString :: String} deriving (Show)
+newtype Name = Name {nameAsString :: String}
 
-newtype Password = Password {passwordAsString :: String} deriving (Show)
+instance Show Name where
+  show = nameAsString
+
+newtype Password = Password {passwordAsString :: String}
+
+instance Show Password where
+  show = passwordAsString
 
 data User
   = User
       { userNameAsName :: Name,
         userPasswordAsPassword :: Password
       }
-  deriving (Show)
+
+instance Show User where
+  show (User name password) =
+    "User name :" ++ show name ++ "\n"
+      ++ "Password :"
+      ++ show password
 
 makeUser :: String -> String -> Validation Error User
 makeUser name password =
@@ -28,13 +44,17 @@ makeUser name password =
     <$> validateName name
     <*> validatePassword password
 
+newtype DisplayableUserValidation = DisplayableUserValidation (Validation Error User)
+
+instance Show DisplayableUserValidation where
+  show (DisplayableUserValidation (Failure err)) = "There are errors :\n" ++ show err
+  show (DisplayableUserValidation (Success user)) = "User successfully created :\n" ++ show user
+
 data InputType = NameInput | PasswordInput
 
-inputTypeAsString :: InputType -> String
-inputTypeAsString inputType =
-  case inputType of
-    NameInput -> "name"
-    PasswordInput -> "password"
+instance Show InputType where
+  show NameInput = "name"
+  show PasswordInput = "password"
 
 validateName :: String -> Validation Error Name
 validateName name =
@@ -47,10 +67,10 @@ validateName name =
 validatePassword :: String -> Validation Error Password
 validatePassword password =
   case stripSpace password PasswordInput of
-  Failure err -> Failure err
-  Success stripped ->
-     isOnlyAlphaNum stripped PasswordInput
-      *> passwordMustHaveValidLength (Password stripped)
+    Failure err -> Failure err
+    Success stripped ->
+      isOnlyAlphaNum stripped PasswordInput
+        *> passwordMustHaveValidLength (Password stripped)
 
 passwordMustHaveValidLength :: Password -> Validation Error Password
 passwordMustHaveValidLength password
@@ -59,11 +79,11 @@ passwordMustHaveValidLength password
 
 isOnlyAlphaNum :: String -> InputType -> Validation Error String
 isOnlyAlphaNum input inputType
-  | not $ all isAlphaNum input = Failure $ Error ["The specified " ++ inputTypeAsString inputType ++ " must not contain any non alphanumerical characters"]
+  | not $ all isAlphaNum input = Failure $ Error ["The specified " ++ show inputType ++ " must not contain any non alphanumerical characters"]
   | otherwise = Success input
 
 stripSpace :: String -> InputType -> Validation Error String
-stripSpace [] inputType = Failure $ Error ["The specified " ++ inputTypeAsString inputType ++ " must not be empty"]
+stripSpace [] inputType = Failure $ Error ["The specified " ++ show inputType ++ " must not be empty"]
 stripSpace (x : xs) inputType = if isSpace x then stripSpace xs inputType else Success $ stripReversed $ reverse $ x : xs
   where
     stripReversed :: String -> String
