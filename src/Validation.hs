@@ -38,15 +38,19 @@ inputTypeAsString inputType =
 
 validateName :: String -> Validation Error Name
 validateName name =
-  stripSpace name NameInput
-    *> isOnlyAlphaNum name NameInput
-    *> nameMustHaveValidLength (Name name)
+  case stripSpace name NameInput of
+    Failure err -> Failure err
+    Success stripped ->
+      isOnlyAlphaNum stripped NameInput
+        *> nameMustHaveValidLength (Name stripped)
 
 validatePassword :: String -> Validation Error Password
 validatePassword password =
-  stripSpace password PasswordInput
-    *> isOnlyAlphaNum password PasswordInput
-    *> passwordMustHaveValidLength (Password password)
+  case stripSpace password PasswordInput of
+  Failure err -> Failure err
+  Success stripped ->
+     isOnlyAlphaNum stripped PasswordInput
+      *> passwordMustHaveValidLength (Password stripped)
 
 passwordMustHaveValidLength :: Password -> Validation Error Password
 passwordMustHaveValidLength password
