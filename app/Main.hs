@@ -1,6 +1,8 @@
 module Main where
 
+import State
 import ValidationCourse
+import Reader
 
 main :: IO ()
 {-
