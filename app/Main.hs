@@ -1,8 +1,9 @@
 module Main where
 
+import Reader
 import State
 import ValidationCourse
-import Reader
+import Writer
 
 main :: IO ()
 {-
